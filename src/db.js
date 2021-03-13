@@ -24,7 +24,7 @@ export const setGameData = ({ board, players, isGameOver }) => {
   return game;
 };
 
-export const updateBoard = (board = ["", "", "", "", "", "", "", "", ""]) => {
+export const updateBoard = (board) => {
   firebaseDatabase
     .ref(boardNode)
     .update(board)
