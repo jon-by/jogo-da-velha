@@ -1,30 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { StyledSlot } from "./Slot.styled";
 
-const Slot = ({ value, index, onClick, playerTime }) => {
-  const [color, setColor] = useState(null);
+const Slot = ({ value, index, onClick, player }) => {
+  const [slotValue, setSlotValue] = useState("");
 
-  const handleClick = (index, playerTime) => {
-    onClick(index);
-    setColor(() => {
-      if (color !== null){
-          return color
-      }else{
-        return playerTime === 1 ? "#ff00005c" : "#0000ffa6";
-      }
-
-      
-    });
-  };
-
+  const handleClick = (index) => onClick(index);
   return (
     <StyledSlot
-      color={color}
-      playerTime={playerTime}
-      onClick={() => handleClick(index, playerTime)}
+      onClick={() => handleClick(index)}
+      onMouseOver={() => {
+        if(value !== '') return
+        setSlotValue(player.simbol);
+      }}
+      onMouseLeave={()=>{        
+        setSlotValue('')
+      }}
     >
-      {value}
+      {value === ''? slotValue: value}
     </StyledSlot>
   );
 };
