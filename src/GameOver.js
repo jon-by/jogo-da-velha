@@ -3,7 +3,7 @@ import { GameOverInfo, Winner } from "./GameOver.styled";
 
 import GameActions from "./GameActions";
 
-const GameOver = ({ player, players, dispatch }) => {
+const GameOver = ({ player, players, dispatch, ref }) => {
   const winner = players[player];
   return (
     <GameOverInfo>

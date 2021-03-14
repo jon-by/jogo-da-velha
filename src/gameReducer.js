@@ -1,10 +1,8 @@
-import INITIAL_STATE, {REF} from "./constants";
-
+import INITIAL_STATE, { REF } from "./constants";
 
 function reducer(state, { type, payload }) {
   switch (type) {
     case "setBoard":
-      REF.child('/board').set(payload)
       return {
         ...state,
         board: payload,
@@ -37,7 +35,7 @@ function reducer(state, { type, payload }) {
     case "drawGame":
       return {
         ...state,
-        drawGame: true,
+        drawGame: payload,
       };
 
     case "newRound":
@@ -50,7 +48,6 @@ function reducer(state, { type, payload }) {
     case "newGame":
       return {
         ...state,
-
         board: ["", "", "", "", "", "", "", "", ""],
         players: {
           1: {

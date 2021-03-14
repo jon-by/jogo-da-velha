@@ -1,6 +1,4 @@
 import database from './firebase'
-
-
 const INITIAL_STATE = {
     board: ["", "", "", "", "", "", "", "", ""],
     players: {

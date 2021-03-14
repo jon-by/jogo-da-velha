@@ -10,17 +10,33 @@ import DrawGame from "./DrawGame";
 import INITIAL_STATE, { SEQUENCE_WINNER, REF } from "./constants";
 
 function App() {
-  useEffect(() => {
-    REF.set(INITIAL_STATE);
-  }, []);
+  
 
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
 
-  REF.on('value',snapshot =>{
-    console.log(snapshot.val())
-  })
 
+  useEffect(()=>{
+
+    REF.child('/board').on('value',snapshot =>{
+      dispatch({type:"setBoard", payload:snapshot.val()})
+    })
+    REF.child('/isGameOver').on('value',snapshot =>{
+      dispatch({type:"setGameOver", payload:snapshot.val()})
+    })
+  
+    REF.child('/drawGame').on('value',snapshot =>{
+      dispatch({type:"drawGame", payload:snapshot.val()})
+      console.log(snapshot.val())
+    })
+
+    REF.child('/players').on('value',snapshot =>{
+      dispatch({type:"setPlayers", payload:snapshot.val()})
+      console.log(snapshot.val())
+    })
+    
+  },[])
+  
 
   const makePlay = (index) => {
     if (state.isGameOver || state.board[index] !== "") return;
@@ -28,7 +44,7 @@ function App() {
     let newBoard = [...state.board];
 
     newBoard[index] = state.players[state.playerTime].simbol;
-    dispatch({ type: "setBoard", payload: newBoard });
+    REF.child('/board').set(newBoard)
   };
   useEffect(() => {
     for (let i = 0; i < SEQUENCE_WINNER.length; i++) {
@@ -40,27 +56,20 @@ function App() {
         state.board[SEQUENCE_WINNER[i][2]] ===
           state.players[state.playerTime].simbol
       ) {
-        dispatch({ type: "setGameOver", payload: true });
+        REF.child('/isGameOver').set(true)
 
-        dispatch({
-          type: "setPlayers",
-          payload: {
-            ...state.players,
-            ...(state.players[state.playerTime].score =
-              state.players[state.playerTime].score + 1),
-          },
-        });
+        REF.child(`/players/${state.playerTime}/score`).set(state.players[state.playerTime].score + 1)        
 
         console.log(state.players[state.playerTime].name + " ganhou");
         return;
       } else if (state.board.every((currentValue) => currentValue !== "")) {
-        dispatch({ type: "drawGame" });
+        
+        REF.child('/drawGame').set(true)
       }
     }
   }, [state.board]);
 
-  useEffect(() => {
-    console.log(state.isGameOver);
+  useEffect(() => {    
     if (state.isGameOver !== true) {
       dispatch({
         type: "setPlayerTime",
@@ -76,7 +85,7 @@ function App() {
           <GameOver
             player={state.lastWinner}
             players={state.players}
-            dispatch={dispatch}
+            dispatch={dispatch}            
           />
         </Overlay>
       )}
